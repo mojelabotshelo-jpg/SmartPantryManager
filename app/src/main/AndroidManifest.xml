@@ -11,6 +11,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SmartPantryManager">
+
+        <!-- Add PantryActivity here -->
+        <activity
+            android:name=".PantryActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".RecipeSuggestionsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddEditIngredientActivity"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

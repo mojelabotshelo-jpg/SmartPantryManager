@@ -9,7 +9,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Database Name and Version
     private static final String DATABASE_NAME = "smart_pantry.db";
-    private static final int DATABASE_VERSION = 2; // Incremented to force clean creation/upgrade
+    private static final int DATABASE_VERSION = 3; // Incremented to force clean creation/upgrade
 
     // Table Names
     public static final String TABLE_PANTRY = "pantry";
