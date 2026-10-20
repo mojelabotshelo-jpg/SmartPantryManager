@@ -4,10 +4,13 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -91,15 +94,46 @@ public class MainActivity extends AppCompatActivity {
             rvPantry.setVisibility(View.VISIBLE);
         }
 
-        // Set up adapter with delete action listener
-        adapter = new PantryAdapter(pantryList, id -> deletePantryItem(id));
+        // Set up adapter with both delete action and item click for updating quantity
+        adapter = new PantryAdapter(
+                pantryList,
+                id -> deletePantryItem(id),
+                item -> showUpdateQuantityDialog(item)
+        );
         rvPantry.setAdapter(adapter);
     }
 
     private void deletePantryItem(int id) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.delete(DatabaseHelper.TABLE_PANTRY, "id = ?", new String[]{String.valueOf(id)});
+        dbHelper.deletePantryItem(id);
         Toast.makeText(this, "Item deleted from pantry", Toast.LENGTH_SHORT).show();
         loadPantryItems(); // Reload the list
+    }
+
+    private void showUpdateQuantityDialog(PantryItem item) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Update Quantity: " + item.getName());
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        input.setText(String.valueOf(item.getQuantity()));
+        input.setPadding(50, 40, 50, 40);
+        builder.setView(input);
+
+        builder.setPositiveButton("Update", (dialog, which) -> {
+            String qtyStr = input.getText().toString().trim();
+            if (!qtyStr.isEmpty()) {
+                try {
+                    double newQuantity = Double.parseDouble(qtyStr);
+                    dbHelper.updatePantryQuantity(item.getId(), newQuantity);
+                    Toast.makeText(this, "Quantity updated successfully", Toast.LENGTH_SHORT).show();
+                    loadPantryItems(); // Refresh the list
+                } catch (NumberFormatException e) {
+                    Toast.makeText(this, "Invalid number format", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+        builder.show();
     }
 }

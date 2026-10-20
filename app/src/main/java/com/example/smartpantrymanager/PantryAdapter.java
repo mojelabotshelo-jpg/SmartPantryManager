@@ -13,14 +13,20 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryView
 
     private List<PantryItem> pantryList;
     private OnItemDeleteListener deleteListener;
+    private OnItemClickListener clickListener;
 
     public interface OnItemDeleteListener {
         void onDeleteClick(int id);
     }
 
-    public PantryAdapter(List<PantryItem> pantryList, OnItemDeleteListener deleteListener) {
+    public interface OnItemClickListener {
+        void onItemClick(PantryItem item);
+    }
+
+    public PantryAdapter(List<PantryItem> pantryList, OnItemDeleteListener deleteListener, OnItemClickListener clickListener) {
         this.pantryList = pantryList;
         this.deleteListener = deleteListener;
+        this.clickListener = clickListener;
     }
 
     @NonNull
@@ -37,9 +43,17 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryView
         holder.tvQtyUnit.setText("Quantity: " + item.getQuantity() + " " + item.getUnit());
         holder.tvExpiry.setText("Expiry: " + (item.getExpiryDate() == null || item.getExpiryDate().isEmpty() ? "None" : item.getExpiryDate()));
 
+        // Handle delete button click
         holder.btnDelete.setOnClickListener(v -> {
             if (deleteListener != null) {
                 deleteListener.onDeleteClick(item.getId());
+            }
+        });
+
+        // Handle entire row click to edit quantity
+        holder.itemView.setOnClickListener(v -> {
+            if (clickListener != null) {
+                clickListener.onItemClick(item);
             }
         });
     }
