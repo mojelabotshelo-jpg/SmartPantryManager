@@ -66,7 +66,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.setForeignKeyConstraintsEnabled(true);
     }
 
-    // Helper method to seed 15 initial recipes and their required ingredients
+    // Helper method to seed initial recipes and their required ingredients
     private void seedRecipes(SQLiteDatabase db) {
         // Recipe 1
         long r1 = addRecipe(db, "Tomato Pasta", "Boil pasta in salted water. Sauté diced tomatoes and minced garlic in a pan. Mix together and serve warm.");
@@ -167,5 +167,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv.put("quantity", qty);
         cv.put("unit", unit);
         db.insert(TABLE_RECIPE_INGREDIENTS, null, cv);
+    }
+
+    // --- Pantry Management Methods ---
+
+    // Delete a pantry item by its ID
+    public void deletePantryItem(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_PANTRY, "id = ?", new String[]{String.valueOf(id)});
+        db.close();
+    }
+
+    // Update quantity of an existing pantry item
+    public void updatePantryQuantity(int id, double newQuantity) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("quantity", newQuantity);
+        db.update(TABLE_PANTRY, values, "id = ?", new String[]{String.valueOf(id)});
+        db.close();
     }
 }
