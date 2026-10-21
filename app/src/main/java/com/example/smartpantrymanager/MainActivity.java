@@ -56,8 +56,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Settings placeholder action
+        Button btnSettings = findViewById(R.id.btnSettings);
         btnSettings.setOnClickListener(v -> {
-            Toast.makeText(this, "Settings screen coming soon!", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
+
         });
     }
 
@@ -135,5 +138,9 @@ public class MainActivity extends AppCompatActivity {
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
         builder.show();
+
+        Intent intent = new Intent(this, AddRecipeActivity.class);
+        startActivity(intent);
+
     }
 }

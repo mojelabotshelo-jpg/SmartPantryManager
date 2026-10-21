@@ -12,6 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SmartPantryManager">
 
+        <activity android:name=".SettingsActivity" />
         <!-- Add PantryActivity here -->
         <activity
             android:name=".PantryActivity"

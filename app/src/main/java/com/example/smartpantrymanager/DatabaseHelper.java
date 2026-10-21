@@ -223,6 +223,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return recipeId;
     }
+    public void resetToDefaults() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM " + TABLE_PANTRY);
+        db.execSQL("DELETE FROM " + TABLE_RECIPE_INGREDIENTS);
+        db.execSQL("DELETE FROM " + TABLE_RECIPES);
+
+        // Re-seed default recipes
+        seedRecipes(db);
+        db.close();
+    }
 
     // --- Pantry Management Methods ---
 
