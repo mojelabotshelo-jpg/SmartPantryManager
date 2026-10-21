@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -167,6 +168,60 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv.put("quantity", qty);
         cv.put("unit", unit);
         db.insert(TABLE_RECIPE_INGREDIENTS, null, cv);
+    }
+
+    // --- Custom Recipe Model and Insertion Method ---
+
+    public static class RecipeIngredient {
+        private String name;
+        private double quantity;
+        private String unit;
+
+        public RecipeIngredient(String name, double quantity, String unit) {
+            this.name = name;
+            this.quantity = quantity;
+            this.unit = unit;
+        }
+
+        public String getName() { return name; }
+        public double getQuantity() { return quantity; }
+        public String getUnit() { return unit; }
+    }
+
+    public long insertRecipeWithIngredients(String name, String instructions, List<RecipeIngredient> ingredientsList) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        long recipeId = -1;
+
+        try {
+            db.beginTransaction();
+
+            // 1. Insert Recipe
+            ContentValues cvRecipe = new ContentValues();
+            cvRecipe.put("name", name);
+            cvRecipe.put("instructions", instructions);
+            recipeId = db.insert(TABLE_RECIPES, null, cvRecipe);
+
+            if (recipeId != -1 && ingredientsList != null) {
+                // 2. Insert Associated Ingredients
+                for (RecipeIngredient ing : ingredientsList) {
+                    ContentValues cvIng = new ContentValues();
+                    cvIng.put("recipe_id", recipeId);
+                    cvIng.put("ingredient_name", ing.getName().toLowerCase().trim());
+                    cvIng.put("quantity", ing.getQuantity());
+                    cvIng.put("unit", ing.getUnit());
+                    db.insert(TABLE_RECIPE_INGREDIENTS, null, cvIng);
+                }
+            }
+
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.endTransaction();
+            db.close();
+        }
+
+        return recipeId;
     }
 
     // --- Pantry Management Methods ---
